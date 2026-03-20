@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, CircularProgress } from '@mui/material';
 import { CustomerContext } from '../../context/CustomerContext';
 
 const EditCustomerModal = ({ open, onClose, customer }) => {
   const { updateCustomer } = useContext(CustomerContext);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (customer) {
@@ -16,7 +17,9 @@ const EditCustomerModal = ({ open, onClose, customer }) => {
 
   const handleSave = async () => {
     if (!name.trim() || !phone.trim()) return;
+    setLoading(true);
     const success = await updateCustomer(customer._id || customer.id, { name, phone });
+    setLoading(false);
     if (success) {
       onClose();
     }
@@ -49,8 +52,8 @@ const EditCustomerModal = ({ open, onClose, customer }) => {
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} color="inherit" sx={{ fontWeight: 600 }}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" color="primary" disableElevation>
-          Update Customer
+        <Button onClick={handleSave} variant="contained" color="primary" disableElevation disabled={loading}>
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Update Customer'}
         </Button>
       </DialogActions>
     </Dialog>

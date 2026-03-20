@@ -1,8 +1,8 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, CircularProgress } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
-const DeleteConfirmModal = ({ open, onClose, onConfirm, title, message }) => {
+const DeleteConfirmModal = ({ open, onClose, onConfirm, title, message, loading }) => {
   return (
     <Dialog 
       open={open} 
@@ -23,11 +23,11 @@ const DeleteConfirmModal = ({ open, onClose, onConfirm, title, message }) => {
         </Typography>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2, pt: 2 }}>
-        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ minWidth: 100, borderRadius: 2 }}>
+        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ minWidth: 100, borderRadius: 2 }} disabled={loading}>
           Cancel
         </Button>
-        <Button onClick={onConfirm} variant="contained" color="error" disableElevation sx={{ minWidth: 100, borderRadius: 2 }}>
-          Delete
+        <Button onClick={onConfirm} variant="contained" color="error" disableElevation sx={{ minWidth: 100, borderRadius: 2 }} disabled={loading}>
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Delete'}
         </Button>
       </DialogActions>
     </Dialog>

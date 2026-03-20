@@ -87,7 +87,7 @@ const Dashboard = () => {
                     primaryTypographyProps={{ fontWeight: 500 }}
                   />
                   <Typography variant="body2" fontWeight="bold" color="secondary.main">
-                    ${visit.amount}
+                    ₹{visit.amount}
                   </Typography>
                 </ListItem>
                 {index < recentVisits.length - 1 && <Divider component="li" />}

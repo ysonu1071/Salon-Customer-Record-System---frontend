@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, CircularProgress } from '@mui/material';
 import { CustomerContext } from '../../context/CustomerContext';
 
 const AddCustomerModal = ({ open, onClose }) => {
@@ -7,9 +7,13 @@ const AddCustomerModal = ({ open, onClose }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
 
+  const [loading, setLoading] = useState(false);
+
   const handleSave = async () => {
     if (!name.trim() || !phone.trim()) return;
+    setLoading(true);
     const success = await addCustomer({ name, phone });
+    setLoading(false);
     if (success) {
       setName('');
       setPhone('');
@@ -44,8 +48,8 @@ const AddCustomerModal = ({ open, onClose }) => {
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} color="inherit" sx={{ fontWeight: 600 }}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" color="primary" disableElevation>
-          Save Customer
+        <Button onClick={handleSave} variant="contained" color="primary" disableElevation disabled={loading}>
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Customer'}
         </Button>
       </DialogActions>
     </Dialog>

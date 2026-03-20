@@ -23,6 +23,7 @@ const CustomerDetail = () => {
   const [isEditCustomerOpen, setIsEditCustomerOpen] = useState(false);
   const [isEditVisitOpen, setIsEditVisitOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfig, setDeleteConfig] = useState({ type: '', title: '', message: '', id: null });
   const [selectedVisit, setSelectedVisit] = useState(null);
 
@@ -81,11 +82,14 @@ const CustomerDetail = () => {
   };
 
   const handleConfirmDelete = async () => {
+    setIsDeleting(true);
     if (deleteConfig.type === 'customer') {
       const success = await deleteCustomer(deleteConfig.id);
+      setIsDeleting(false);
       if (success) navigate('/customers');
     } else if (deleteConfig.type === 'visit') {
       await deleteVisit(customer._id, deleteConfig.id);
+      setIsDeleting(false);
     }
     setIsDeleteConfirmOpen(false);
   };
@@ -271,6 +275,7 @@ const CustomerDetail = () => {
         onConfirm={handleConfirmDelete}
         title={deleteConfig.title}
         message={deleteConfig.message}
+        loading={isDeleting}
       />
     </Box>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Box, Typography, TextField, Button, Paper, Link as MuiLink } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, Link as MuiLink, CircularProgress } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
@@ -7,12 +7,15 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const success = await register(name, email, password);
+    setLoading(false);
     if (success) {
       navigate('/');
     }
@@ -62,9 +65,10 @@ const Register = () => {
             size="large" 
             fullWidth 
             disableElevation
+            disabled={loading}
             sx={{ mt: 1, py: 1.5, borderRadius: 2 }}
           >
-            Sign Up
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign Up'}
           </Button>
         </Box>
         

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, CircularProgress } from '@mui/material';
 import { CustomerContext } from '../../context/CustomerContext';
 
 const EditVisitModal = ({ open, onClose, customerId, visit }) => {
@@ -7,6 +7,8 @@ const EditVisitModal = ({ open, onClose, customerId, visit }) => {
   const [service, setService] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (visit) {
@@ -22,11 +24,13 @@ const EditVisitModal = ({ open, onClose, customerId, visit }) => {
   const handleSave = async () => {
     if (!service.trim() || !amount.toString().trim() || !date) return;
 
+    setLoading(true);
     const success = await updateVisit(customerId, visit._id, {
       service,
       amount: parseFloat(amount),
       date: new Date(date).toISOString(),
     });
+    setLoading(false);
 
     if (success) {
       onClose();
@@ -70,8 +74,8 @@ const EditVisitModal = ({ open, onClose, customerId, visit }) => {
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} color="inherit" sx={{ fontWeight: 600 }}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" color="secondary" disableElevation>
-          Update Visit
+        <Button onClick={handleSave} variant="contained" color="secondary" disableElevation disabled={loading}>
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Update Visit'}
         </Button>
       </DialogActions>
     </Dialog>

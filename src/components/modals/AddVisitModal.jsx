@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, CircularProgress } from '@mui/material';
 import { CustomerContext } from '../../context/CustomerContext';
 
 const AddVisitModal = ({ open, onClose, customerId }) => {
@@ -10,15 +10,18 @@ const AddVisitModal = ({ open, onClose, customerId }) => {
   // Format today's date to YYYY-MM-DD for the date picker default
   const today = new Date().toISOString().split('T')[0];
   const [date, setDate] = useState(today);
+  const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
     if (!service.trim() || !amount.trim() || !date) return;
 
+    setLoading(true);
     const success = await addVisit(customerId, {
       service,
       amount: parseFloat(amount),
       date: new Date(date).toISOString(),
     });
+    setLoading(false);
 
     if (success) {
       setService('');
@@ -66,8 +69,8 @@ const AddVisitModal = ({ open, onClose, customerId }) => {
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} color="inherit" sx={{ fontWeight: 600 }}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" color="secondary" disableElevation>
-          Save Visit
+        <Button onClick={handleSave} variant="contained" color="secondary" disableElevation disabled={loading}>
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Visit'}
         </Button>
       </DialogActions>
     </Dialog>

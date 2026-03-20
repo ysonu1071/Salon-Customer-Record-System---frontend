@@ -1,17 +1,20 @@
 import React, { useState, useContext } from 'react';
-import { Box, Typography, TextField, Button, Paper, Link as MuiLink } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, Link as MuiLink, CircularProgress } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const success = await login(email, password);
+    setLoading(false);
     if (success) {
       navigate('/');
     }
@@ -53,9 +56,10 @@ const Login = () => {
             size="large" 
             fullWidth 
             disableElevation
+            disabled={loading}
             sx={{ mt: 1, py: 1.5, borderRadius: 2 }}
           >
-            Log In
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Log In'}
           </Button>
         </Box>
         
