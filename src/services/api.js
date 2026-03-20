@@ -1,0 +1,24 @@
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api',
+});
+
+// Add a request interceptor to include the auth token
+api.interceptors.request.use(
+  (config) => {
+    const saved = localStorage.getItem('salon_auth_user');
+    if (saved) {
+      const { token } = JSON.parse(saved);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default api;
