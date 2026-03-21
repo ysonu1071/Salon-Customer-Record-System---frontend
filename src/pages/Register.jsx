@@ -5,6 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 
 const Register = () => {
   const [name, setName] = useState('');
+  const [salonName, setSalonName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,7 +15,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const success = await register(name, email, password);
+    const success = await register(name, email, password, salonName);
     setLoading(false);
     if (success) {
       navigate('/');
@@ -39,6 +40,14 @@ const Register = () => {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            label="Salon Name"
+            variant="outlined"
+            fullWidth
+            required
+            value={salonName}
+            onChange={(e) => setSalonName(e.target.value)}
           />
           <TextField
             label="Email Address"
