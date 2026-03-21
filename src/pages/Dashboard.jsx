@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, Grid, Button, Fab, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Divider, CircularProgress, IconButton, Menu, MenuItem, ListItemIcon } from '@mui/material';
+import { Box, Typography, Card, CardContent, Grid, Button, Fab, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Divider, CircularProgress, Menu, MenuItem, ListItemIcon } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
@@ -8,10 +8,9 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { CustomerContext } from '../context/CustomerContext';
 import AddCustomerModal from '../components/modals/AddCustomerModal';
 import AddAppointmentModal from '../components/modals/AddAppointmentModal';
-import AppointmentsListModal from '../components/modals/AppointmentsListModal';
 import DashboardReminders from '../components/DashboardReminders';
 import { AuthContext } from '../context/AuthContext';
-import { format, isSameDay } from 'date-fns';
+import { format } from 'date-fns';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
@@ -20,7 +19,6 @@ const Dashboard = () => {
   const { customers, getRecentVisits, reminders, fetchReminders, loading, appointments } = useContext(CustomerContext);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAddAppointmentOpen, setIsAddAppointmentOpen] = useState(false);
-  const [isAppointmentsListOpen, setIsAppointmentsListOpen] = useState(false);
   const [isRemindersOpen, setIsRemindersOpen] = useState(false);
   const [addMenuAnchor, setAddMenuAnchor] = useState(null);
 
@@ -68,7 +66,7 @@ const Dashboard = () => {
 
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid item xs={3}>
-          <Card sx={{ bgcolor: '#512DA8', color: 'primary.contrastText', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }} onClick={() => setIsAppointmentsListOpen(true)}>
+          <Card sx={{ bgcolor: '#512DA8', color: 'primary.contrastText', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }} onClick={() => navigate('/appointments')}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <CalendarTodayIcon sx={{ opacity: 0.8, mb: 1 }} fontSize="small" />
               <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 'bold' }}>
@@ -188,7 +186,6 @@ const Dashboard = () => {
 
       <AddCustomerModal open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
       <AddAppointmentModal open={isAddAppointmentOpen} onClose={() => setIsAddAppointmentOpen(false)} />
-      <AppointmentsListModal open={isAppointmentsListOpen} onClose={() => setIsAppointmentsListOpen(false)} />
     </Box>
   );
 };
