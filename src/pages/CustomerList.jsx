@@ -49,11 +49,11 @@ const CustomerList = () => {
       ) : (
         <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {filteredCustomers.map(customer => (
-            <Paper key={customer._id} elevation={0} sx={{ borderRadius: 3, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.04)' }}>
+            <Paper key={customer._id} elevation={0} sx={{ borderRadius: 1, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.04)' }}>
               <ListItem
                 button
                 onClick={() => navigate(`/customer/${customer._id}`)}
-                sx={{ py: 2, px: 2 }}
+                sx={{ py: 1, px: 2 }}
               >
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: 'secondary.light', color: 'secondary.contrastText' }}>
@@ -63,12 +63,13 @@ const CustomerList = () => {
                 <ListItemText
                   primary={customer.name}
                   secondary={
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, opacity: 0.8 }}>
+                    <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, opacity: 0.8 }}>
                       <PhoneIcon sx={{ fontSize: 14, mr: 0.5 }} />
                       {customer.phone}
                     </Box>
                   }
                   primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
+                  secondaryTypographyProps={{ component: 'span' }}
                 />
               </ListItem>
             </Paper>

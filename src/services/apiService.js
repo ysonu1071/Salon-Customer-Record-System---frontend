@@ -6,8 +6,13 @@ export const login = async (email, password) => {
   return data;
 };
 
-export const register = async (name, email, password) => {
-  const { data } = await api.post('/users', { name, email, password });
+export const register = async (name, email, password, salonName) => {
+  const { data } = await api.post('/users', { name, email, password, salonName });
+  return data;
+};
+
+export const updateProfile = async (userData) => {
+  const { data } = await api.put('/users/profile', userData);
   return data;
 };
 
@@ -55,7 +60,39 @@ export const deleteVisit = async (customerId, serviceId) => {
   return data;
 };
 
+// Reminder Services
+export const getReminders = async () => {
+  const { data } = await api.get('/customers/reminders');
+  return data;
+};
+
+export const markAsContacted = async (id) => {
+  const { data } = await api.put(`/customers/${id}/contacted`);
+  return data;
+};
+
 export const deleteCustomer = async (id) => {
   const { data } = await api.delete(`/customers/${id}`);
+  return data;
+};
+
+// Appointment Services
+export const getAppointments = async () => {
+  const { data } = await api.get('/appointments');
+  return data;
+};
+
+export const createAppointment = async (appointmentData) => {
+  const { data } = await api.post('/appointments', appointmentData);
+  return data;
+};
+
+export const updateAppointmentStatus = async (id, status) => {
+  const { data } = await api.put(`/appointments/${id}`, { status });
+  return data;
+};
+
+export const deleteAppointment = async (id) => {
+  const { data } = await api.delete(`/appointments/${id}`);
   return data;
 };

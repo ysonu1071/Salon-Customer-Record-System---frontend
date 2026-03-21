@@ -12,14 +12,16 @@ import AddVisitModal from '../components/modals/AddVisitModal';
 import EditCustomerModal from '../components/modals/EditCustomerModal';
 import EditVisitModal from '../components/modals/EditVisitModal';
 import DeleteConfirmModal from '../components/modals/DeleteConfirmModal';
+import AddAppointmentModal from '../components/modals/AddAppointmentModal';
 import { format } from 'date-fns';
 
 const CustomerDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { getCustomer, loading, deleteCustomer, deleteVisit } = useContext(CustomerContext);
-  
+
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isEditCustomerOpen, setIsEditCustomerOpen] = useState(false);
   const [isEditVisitOpen, setIsEditVisitOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -103,7 +105,7 @@ const CustomerDetail = () => {
   return (
     <Box sx={{ pb: 8 }}>
       <Box sx={{ position: 'relative', mb: 4, textAlign: 'center' }}>
-        <IconButton 
+        <IconButton
           sx={{ position: 'absolute', right: 0, top: 0 }}
           onClick={(e) => setCustomerMenuAnchor(e.currentTarget)}
         >
@@ -170,7 +172,7 @@ const CustomerDetail = () => {
         </Grid>
       </Grid>
 
-      <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: "column", md: "row" }, gap: 2, mb: 4 }}>
         <Button
           variant="contained"
           color="primary"
@@ -179,6 +181,15 @@ const CustomerDetail = () => {
           onClick={() => setIsVisitModalOpen(true)}
         >
           Add Visit
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          fullWidth
+          startIcon={<CalendarMonthIcon />}
+          onClick={() => setIsAppointmentModalOpen(true)}
+        >
+          Book Appointment
         </Button>
         <Button
           variant="outlined"
@@ -203,7 +214,7 @@ const CustomerDetail = () => {
           <List disablePadding>
             {[...visits].sort((a, b) => new Date(b.date) - new Date(a.date)).map((visit, index) => (
               <React.Fragment key={visit._id || index}>
-                <ListItem 
+                <ListItem
                   sx={{ py: 2 }}
                   secondaryAction={
                     <IconButton edge="end" aria-label="options" onClick={(e) => {
@@ -256,20 +267,26 @@ const CustomerDetail = () => {
         customerId={customer._id}
       />
 
-      <EditCustomerModal 
+      <AddAppointmentModal
+        open={isAppointmentModalOpen}
+        onClose={() => setIsAppointmentModalOpen(false)}
+        initialCustomer={customer}
+      />
+
+      <EditCustomerModal
         open={isEditCustomerOpen}
         onClose={() => setIsEditCustomerOpen(false)}
         customer={customer}
       />
 
-      <EditVisitModal 
+      <EditVisitModal
         open={isEditVisitOpen}
         onClose={() => setIsEditVisitOpen(false)}
         customerId={customer._id}
         visit={selectedVisit}
       />
 
-      <DeleteConfirmModal 
+      <DeleteConfirmModal
         open={isDeleteConfirmOpen}
         onClose={() => setIsDeleteConfirmOpen(false)}
         onConfirm={handleConfirmDelete}

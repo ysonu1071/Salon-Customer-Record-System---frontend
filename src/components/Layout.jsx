@@ -3,14 +3,38 @@ import { AppBar, Toolbar, Typography, Container, Box, IconButton, Snackbar, Aler
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { Menu, MenuItem, ListItemIcon } from '@mui/material';
+import ProfileModal from './modals/ProfileModal';
 import { CustomerContext } from '../context/CustomerContext';
 import { AuthContext } from '../context/AuthContext';
 
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfileClick = () => {
+    setIsProfileOpen(true);
+    handleMenuClose();
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+    handleMenuClose();
+  };
 
   const getPageTitle = () => {
     if (location.pathname === '/') return 'Dashboard';
@@ -39,17 +63,43 @@ const Layout = () => {
 
             {location.pathname === '/' && (
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                <Button color="inherit" onClick={() => navigate('/customers')} sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.85rem' }}>
+                {/* <Button color="inherit" onClick={() => navigate('/customers')} sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.85rem' }}>
                   All Customers
-                </Button>
-                <IconButton color="inherit" onClick={logout} sx={{ color: 'text.secondary' }}>
-                  <LogoutIcon fontSize="small" />
+                </Button> */}
+                <IconButton color="inherit" onClick={handleMenuOpen} sx={{ color: 'text.secondary' }}>
+                  <MenuIcon fontSize="small" />
                 </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  PaperProps={{
+                    elevation: 3,
+                    sx: { borderRadius: 1, mt: 1, minWidth: 150 }
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
+                    <ListItemIcon>
+                      <AccountCircleIcon fontSize="small" color="primary" />
+                    </ListItemIcon>
+                    <Typography variant="body2" fontWeight={500}>Profile</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleLogoutClick} sx={{ py: 1.5, color: 'error.main' }}>
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" color="error" />
+                    </ListItemIcon>
+                    <Typography variant="body2" fontWeight={500}>Logout</Typography>
+                  </MenuItem>
+                </Menu>
               </Box>
             )}
           </Toolbar>
         </Container>
       </AppBar>
+
+      <ProfileModal open={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />
 
       <Container component="main" maxWidth="sm" sx={{ flexGrow: 1, py: 3, px: 2 }}>
         <Outlet />

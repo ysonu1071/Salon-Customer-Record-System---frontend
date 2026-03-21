@@ -27,9 +27,9 @@ export const AuthProvider = ({ children }) => {
     setNotification(prev => ({ ...prev, open: false }));
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, salonName) => {
     try {
-      const data = await authService.register(name, email, password);
+      const data = await authService.register(name, email, password, salonName);
       setUser(data);
       showNotification('Registration successful!');
       return true;
@@ -51,13 +51,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = async (userData) => {
+    try {
+      const data = await authService.updateProfile(userData);
+      setUser(data);
+      showNotification('Profile updated successfully!');
+      return true;
+    } catch (error) {
+      showNotification(error.response?.data?.message || 'Profile update failed', 'error');
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
   };
 
   return (
     <AuthContext.Provider value={{
-      user, register, login, logout,
+      user, register, login, logout, updateProfile,
       notification, showNotification, closeNotification
     }}>
       {children}
