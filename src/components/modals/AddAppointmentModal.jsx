@@ -8,15 +8,22 @@ import {
   Stack,
   IconButton,
   Autocomplete,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { CustomerContext } from '../../context/CustomerContext';
+
+const SERVICE_TYPES = ['Makeup', 'Service', 'Mehandi', 'Nail Extension'];
 
 const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
   const { customers, addAppointment } = useContext(CustomerContext);
   const [formData, setFormData] = useState({
     customerId: '',
     customerName: '',
+    serviceType: '',
     service: '',
     date: '',
     time: '',
@@ -25,16 +32,17 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
 
   useEffect(() => {
     if (initialCustomer) {
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         customerId: initialCustomer._id || initialCustomer.id,
         customerName: initialCustomer.name,
         phone: initialCustomer.phone || '',
-      });
+      }));
     } else {
-       setFormData({
+      setFormData({
         customerId: '',
         customerName: '',
+        serviceType: '',
         service: '',
         date: '',
         time: '',
@@ -56,10 +64,12 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 450 },
+    width: { xs: '90%', sm: 480 },
+    maxHeight: '95vh',
+    overflowY: 'auto',
     bgcolor: 'background.paper',
     borderRadius: 2,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
     p: 4,
   };
 
@@ -76,7 +86,8 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Stack spacing={3}>
+          <Stack spacing={2.5}>
+            {/* Customer field */}
             {initialCustomer ? (
               <TextField
                 label="Customer"
@@ -97,31 +108,46 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
                   });
                 }}
                 renderInput={(params) => (
-                  <TextField 
-                    {...params} 
-                    label="Select Customer" 
-                    required 
+                  <TextField
+                    {...params}
+                    label="Select Customer"
+                    required
                     helperText="Search by name or phone"
                   />
                 )}
                 freeSolo
                 onInputChange={(event, newInputValue) => {
-                   if (!customers.find(c => c.name === newInputValue)) {
-                     setFormData({ ...formData, customerName: newInputValue, customerId: '' });
-                   }
+                  if (!customers.find(c => c.name === newInputValue)) {
+                    setFormData({ ...formData, customerName: newInputValue, customerId: '' });
+                  }
                 }}
               />
             )}
 
+            {/* Service Type Dropdown */}
+            <FormControl fullWidth required>
+              <InputLabel>Service Type</InputLabel>
+              <Select
+                value={formData.serviceType}
+                label="Service Type"
+                onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
+              >
+                {SERVICE_TYPES.map(type => (
+                  <MenuItem key={type} value={type}>{type}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Service description */}
             <TextField
-              label="Service"
-              required
+              label="Service Description"
               fullWidth
               value={formData.service}
               onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-              placeholder="e.g. Haircut, Spa, Facial"
+              placeholder="e.g. Bridal Makeup, French Tips, etc."
             />
 
+            {/* Date & Time */}
             <Stack direction="row" spacing={2}>
               <TextField
                 label="Date"
@@ -154,8 +180,8 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
               type="submit"
               variant="contained"
               size="large"
-              sx={{ 
-                mt: 2, 
+              sx={{
+                mt: 1,
                 py: 1.5,
                 fontWeight: 'bold',
                 textTransform: 'none',

@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import CustomerList from './pages/CustomerList';
 import CustomerDetail from './pages/CustomerDetail';
+import Appointments from './pages/Appointments';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { CustomerProvider } from './context/CustomerContext';
@@ -28,6 +29,7 @@ const AppContent = () => {
           <Route index element={<Dashboard />} />
           <Route path="customers" element={<CustomerList />} />
           <Route path="customer/:id" element={<CustomerDetail />} />
+          <Route path="appointments" element={<Appointments />} />
         </Route>
       </Routes>
       <Snackbar open={notification.open} autoHideDuration={4000} onClose={closeNotification} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>

@@ -4,9 +4,11 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CloseIcon from '@mui/icons-material/Close';
 import { CustomerContext } from '../context/CustomerContext';
 import { format } from 'date-fns';
+import { AuthContext } from '../context/AuthContext';
 
 const DashboardReminders = ({ open, onClose }) => {
   const { reminders, fetchReminders, markAsContacted } = useContext(CustomerContext);
+  const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('followups');
 
   const downMd = useTheme((theme) => theme.breakpoints.down('md'))
@@ -23,9 +25,9 @@ const DashboardReminders = ({ open, onClose }) => {
     let template = '';
 
     if (type === 'followup') {
-      template = `Hi *${customer.name}*! 👋 This is *Salon MVP*. Thanks for visiting us for your *${customer.service}*! ✨ We hope you loved the results! We'd love to see you again soon. Have a great day! ❤️`;
+      template = `Hi *${customer.name}*! 👋 This is *${user?.salonName}*. Thanks for visiting us for your *${customer.service}*! ✨ We hope you loved the results! We'd love to see you again soon. Have a great day! ❤️`;
     } else {
-      template = `Hi *${customer.name}*! ❤️ We miss you at *Salon MVP*! ✨ It's been a month since your last pampering session. Ready for a refresh? Book your next appointment now and get that glow back! 💇‍♀️💅`;
+      template = `Hi *${customer.name}*! ❤️ We miss you at *${user?.salonName}*! ✨ It's been a month since your last pampering session. Ready for a refresh? Book your next appointment now and get that glow back! 💇‍♀️💅`;
     }
 
     const message = encodeURIComponent(template);
