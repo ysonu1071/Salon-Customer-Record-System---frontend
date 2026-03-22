@@ -142,7 +142,7 @@ export const CustomerProvider = ({ children }) => {
         ...v, 
         customerName: c.name, 
         customerId: c._id || c.id,
-        amount: v.price // for UI compatibility
+        amount: v.totalBill || 0 // Use total bill for display
       }))
     );
     return allVisits.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);

@@ -13,6 +13,7 @@ import { AuthContext } from '../context/AuthContext';
 import { format } from 'date-fns';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -44,7 +45,15 @@ const Dashboard = () => {
   const currentMonth = new Date().getMonth();
   const thisMonthRevenue = customers.reduce((acc, customer) => {
     const monthVisits = (customer.servicesHistory || []).filter(v => new Date(v.date).getMonth() === currentMonth);
-    return acc + monthVisits.reduce((sum, v) => sum + Number(v.price || 0), 0);
+    return acc + monthVisits.reduce((sum, v) => sum + Number(v.totalBill || 0), 0);
+  }, 0);
+
+  // Calculate total pending payments across all time
+  const totalPendingAmount = customers.reduce((acc, customer) => {
+    return acc + (customer.servicesHistory || []).reduce((sum, v) => {
+      const pending = (v.totalBill || 0) - (v.amountPaid || 0);
+      return sum + Math.max(0, pending);
+    }, 0);
   }, 0);
 
   const handleFollowUp = (visit) => {
@@ -60,12 +69,15 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ pb: 8 }}>
-      <Typography variant="h5" sx={{ mb: 3, color: 'text.primary', fontWeight: 'bold' }}>
+      <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
         Welcome back,
+      </Typography>
+      <Typography variant="subtitle1" sx={{ mb: 4, color: 'primary.main', fontWeight: 'bold' }}>
+        {user.name}
       </Typography>
 
       <Grid container spacing={2} sx={{ mb: 4 }}>
-        <Grid item xs={3}>
+        <Grid item xs={12} sm={6} md={4} lg={2.4}>
           <Card sx={{ bgcolor: '#512DA8', color: 'primary.contrastText', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }} onClick={() => navigate('/appointments')}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <CalendarTodayIcon sx={{ opacity: 0.8, mb: 1 }} fontSize="small" />
@@ -76,8 +88,8 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={3}>
-          <Card onClick={() => navigate('/customers')} sx={{ bgcolor: '#5c4025', color: 'primary.contrastText', height: '100%' }}>
+        <Grid item xs={12} sm={6} md={4} lg={2.4}>
+          <Card onClick={() => navigate('/customers')} sx={{ bgcolor: '#5c4025', color: 'primary.contrastText', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <PeopleOutlineIcon sx={{ opacity: 0.8, mb: 1 }} fontSize="small" />
               <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 'bold' }}>{customers.length}</Typography>
@@ -85,7 +97,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={12} sm={6} md={4} lg={2.4}>
           <Card
             sx={{ bgcolor: '#2e7d32', color: '#fff', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }}
             onClick={() => setIsRemindersOpen(true)}
@@ -97,12 +109,21 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={3}>
-          <Card sx={{ bgcolor: '#4b3a3a', color: 'secondary.contrastText', height: '100%' }}>
+        <Grid item xs={12} sm={6} md={4} lg={2.4}>
+          <Card sx={{ bgcolor: '#4b3a3a', color: 'secondary.contrastText', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }} onClick={() => navigate('/monthly-revenue')}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <SpaIcon sx={{ opacity: 0.8, mb: 1 }} fontSize="small" />
               <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 'bold' }}>₹{thisMonthRevenue}</Typography>
               <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }}>This Month</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} lg={2.4}>
+          <Card sx={{ bgcolor: '#d32f2f', color: '#fff', height: '100%', cursor: 'pointer', '&:hover': { opacity: 0.9 } }} onClick={() => navigate('/pending-payments')}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <AccountBalanceIcon sx={{ opacity: 0.8, mb: 1 }} fontSize="small" />
+              <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 'bold' }}>₹{totalPendingAmount}</Typography>
+              <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }}>Pending</Typography>
             </CardContent>
           </Card>
         </Grid>

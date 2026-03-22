@@ -53,7 +53,11 @@ const CustomerDetail = () => {
     ? new Date(Math.max(...visits.map(v => new Date(v.date))))
     : null;
 
-  const totalSpent = visits.reduce((sum, v) => sum + (v.price || 0), 0);
+  const totalSpent = visits.reduce((sum, v) => sum + (v.totalBill || 0), 0);
+  const totalPending = visits.reduce((sum, v) => {
+    const pending = (v.totalBill || 0) - (v.amountPaid || 0);
+    return sum + Math.max(0, pending);
+  }, 0);
 
   const handleWhatsApp = () => {
     const formattedPhone = customer.phone.replace(/\D/g, '');
@@ -144,7 +148,7 @@ const CustomerDetail = () => {
       </Box>
 
       <Grid container spacing={2} sx={{ mb: 4 }}>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={3}>
           <Card sx={{ textAlign: 'center', height: '100%', bgcolor: '#FAF8F5' }} elevation={0}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography variant="h5" color="primary.dark" fontWeight="bold">{visits.length}</Typography>
@@ -152,15 +156,23 @@ const CustomerDetail = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={3}>
           <Card sx={{ textAlign: 'center', height: '100%', bgcolor: '#FAF8F5' }} elevation={0}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography variant="h5" color="primary.dark" fontWeight="bold">₹{totalSpent}</Typography>
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>Spent</Typography>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>Total Billed</Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={3}>
+          <Card sx={{ textAlign: 'center', height: '100%', bgcolor: totalPending > 0 ? '#ffebee' : '#FAF8F5' }} elevation={0}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <Typography variant="h5" color={totalPending > 0 ? 'error.main' : 'primary.dark'} fontWeight="bold">₹{totalPending}</Typography>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>Pending</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6} sm={3}>
           <Card sx={{ textAlign: 'center', height: '100%', bgcolor: '#FAF8F5' }} elevation={0}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography variant="body1" color="primary.dark" fontWeight="bold" sx={{ height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -233,10 +245,20 @@ const CustomerDetail = () => {
                   <ListItemText
                     primary={visit.service}
                     primaryTypographyProps={{ fontWeight: 500 }}
+                    secondary={
+                      <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Bill: ₹{visit.totalBill || 0}
+                        </Typography>
+                        <Typography variant="body2" color="success.main">
+                          Paid: ₹{visit.amountPaid || 0}
+                        </Typography>
+                        <Typography variant="body2" color={(visit.totalBill || 0) - (visit.amountPaid || 0) > 0 ? 'error.main' : 'text.secondary'}>
+                          Pending: ₹{(visit.totalBill || 0) - (visit.amountPaid || 0)}
+                        </Typography>
+                      </Box>
+                    }
                   />
-                  <Typography fontWeight="bold" color="secondary.main" sx={{ mr: 2 }}>
-                    ₹{visit.price}
-                  </Typography>
                 </ListItem>
                 {index < visits.length - 1 && <Divider component="li" />}
               </React.Fragment>

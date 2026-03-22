@@ -5,7 +5,8 @@ import { CustomerContext } from '../../context/CustomerContext';
 const AddVisitModal = ({ open, onClose, customerId }) => {
   const { addVisit } = useContext(CustomerContext);
   const [service, setService] = useState('');
-  const [amount, setAmount] = useState('');
+  const [totalBill, setTotalBill] = useState('');
+  const [amountPaid, setAmountPaid] = useState('');
 
   // Format today's date to YYYY-MM-DD for the date picker default
   const today = new Date().toISOString().split('T')[0];
@@ -13,19 +14,22 @@ const AddVisitModal = ({ open, onClose, customerId }) => {
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
-    if (!service.trim() || !amount.trim() || !date) return;
+    if (!service.trim() || !date) return;
 
     setLoading(true);
     const success = await addVisit(customerId, {
       service,
-      amount: parseFloat(amount),
+      amount: 0, // Keep for backward compatibility, but not used in UI
+      totalBill: parseFloat(totalBill) || 0,
+      amountPaid: parseFloat(amountPaid) || 0,
       date: new Date(date).toISOString(),
     });
     setLoading(false);
 
     if (success) {
       setService('');
-      setAmount('');
+      setTotalBill('');
+      setAmountPaid('');
       setDate(today);
       onClose();
     }
@@ -39,6 +43,7 @@ const AddVisitModal = ({ open, onClose, customerId }) => {
       <DialogContent>
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           <TextField
+            size='small'
             autoFocus
             label="Service Description"
             variant="outlined"
@@ -48,15 +53,29 @@ const AddVisitModal = ({ open, onClose, customerId }) => {
             placeholder="e.g. Haircut & Color"
           />
           <TextField
-            label="Amount Spent"
+            size='small'
+            label="Total Bill"
             variant="outlined"
             fullWidth
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            value={totalBill}
+            onChange={(e) => setTotalBill(e.target.value)}
             InputProps={{ startAdornment: <Box sx={{ mr: 1, color: 'text.secondary' }}>₹</Box> }}
+            placeholder="0.00"
           />
           <TextField
+            size='small'
+            label="Amount Paid"
+            variant="outlined"
+            fullWidth
+            type="number"
+            value={amountPaid}
+            onChange={(e) => setAmountPaid(e.target.value)}
+            InputProps={{ startAdornment: <Box sx={{ mr: 1, color: 'text.secondary' }}>₹</Box> }}
+            placeholder="0.00"
+          />
+          <TextField
+            size='small'
             label="Date"
             type="date"
             variant="outlined"

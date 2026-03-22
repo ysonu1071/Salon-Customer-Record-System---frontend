@@ -81,23 +81,23 @@ const Appointments = () => {
       </Tabs>
 
       {filtered.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
-          <CalendarMonthIcon sx={{ fontSize: 48, mb: 2, opacity: 0.3 }} />
-          <Typography variant="h6" gutterBottom>No appointments here</Typography>
-          <Typography variant="body2">Use the + button to book a new appointment.</Typography>
+        <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
+          <CalendarMonthIcon sx={{ fontSize: 40, mb: 1.5, opacity: 0.3 }} />
+          <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem' }}>No appointments here</Typography>
+          <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>Use the + button to book a new appointment.</Typography>
         </Box>
       ) : (
-        <Card>
+        <Card sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
           <List disablePadding>
             {filtered.map((appointment, index) => (
               <React.Fragment key={appointment._id}>
-                <ListItem alignItems="flex-start" sx={{ py: 2, pr: 14 }}>
+                <ListItem alignItems="flex-start" sx={{ py: 1.5, pr: 12 }}>
                   <ListItemText
                     primaryTypographyProps={{ component: 'div' }}
                     secondaryTypographyProps={{ component: 'div' }}
                     primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 0.5 }}>
-                        <Typography variant="subtitle1" fontWeight="bold">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap', mb: 0.25 }}>
+                        <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: '0.95rem' }}>
                           {appointment.customerName}
                         </Typography>
                         <Chip
@@ -105,44 +105,83 @@ const Appointments = () => {
                           size="small"
                           color={getStatusColor(appointment.status)}
                           variant="outlined"
-                          sx={{ fontSize: '0.6rem', fontWeight: 'bold', height: 20 }}
+                          sx={{ fontSize: '0.6rem', fontWeight: 'bold', height: 18, px: 0.75 }}
                         />
                         {appointment.serviceType && (
                           <Chip
                             label={appointment.serviceType}
                             size="small"
                             color={SERVICE_TYPE_COLORS[appointment.serviceType] || 'default'}
-                            sx={{ fontSize: '0.6rem', height: 20 }}
+                            sx={{ fontSize: '0.6rem', height: 18, px: 0.75 }}
                           />
                         )}
+                        <Chip
+                          label={appointment.appointmentType === 'salon' ? '🏪 SALON' : '🏠 OUTSIDE'}
+                          size="small"
+                          color={appointment.appointmentType === 'salon' ? 'info' : 'warning'}
+                          sx={{ fontSize: '0.6rem', height: 20 }}
+                        />
                       </Box>
                     }
                     secondary={
                       <Box>
-                        <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
                           {appointment.service}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block">
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.75rem', lineHeight: 1.3 }}>
                           {format(new Date(appointment.date), 'EEE, MMM d, yyyy')} at {appointment.time}
                         </Typography>
                         {appointment.phone && (
-                          <Typography variant="caption" color="text.secondary" display="block">
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.75rem', lineHeight: 1.3 }}>
                             📞 {appointment.phone}
+                          </Typography>
+                        )}
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.75rem', lineHeight: 1.3 }}>
+                          {appointment.appointmentType === 'salon' ? '🏪 Salon' : '🏠 Outside'}
+                          {appointment.appointmentType === 'outside' && appointment.location && (
+                            <span> - {appointment.location}</span>
+                          )}
+                        </Typography>
+                        {(appointment.priceDiscussed || appointment.advanceTaken) ? (
+                          <Box sx={{ mt: 0.75, pt: 0.75, borderTop: '1px solid #e0e0e0' }}>
+                            <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.75rem', lineHeight: 1.3 }}>
+                              💰 Price: ₹{Number(appointment.priceDiscussed || 0).toFixed(2)}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.75rem', lineHeight: 1.3 }}>
+                              ✓ Advance: ₹{Number(appointment.advanceTaken || 0).toFixed(2)}
+                            </Typography>
+                            <Typography 
+                              variant="caption" 
+                              display="block"
+                              sx={{ 
+                                fontWeight: 600,
+                                color: appointment.priceDiscussed - appointment.advanceTaken > 0 ? '#f57c00' : '#4caf50',
+                                fontSize: '0.75rem',
+                                lineHeight: 1.3
+                              }}
+                            >
+                              Remaining: ₹{(Number(appointment.priceDiscussed || 0) - Number(appointment.advanceTaken || 0)).toFixed(2)}
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.75, fontSize: '0.75rem' }}>
+                            No price discussed yet
                           </Typography>
                         )}
                       </Box>
                     }
                   />
                   <ListItemSecondaryAction>
-                    <Stack direction="row" spacing={0.5}>
+                    <Stack direction="row" spacing={0.25}>
                       {appointment.status === 'pending' && (
                         <IconButton
                           size="small"
                           title="Confirm"
                           onClick={() => updateAppointmentStatus(appointment._id, 'confirmed')}
                           color="success"
+                          sx={{ p: 0.5 }}
                         >
-                          <CheckCircleIcon fontSize="small" />
+                          <CheckCircleIcon sx={{ fontSize: '1rem' }} />
                         </IconButton>
                       )}
                       {appointment.status === 'confirmed' && (
@@ -151,8 +190,9 @@ const Appointments = () => {
                           title="Mark Completed"
                           onClick={() => updateAppointmentStatus(appointment._id, 'completed')}
                           color="info"
+                          sx={{ p: 0.5 }}
                         >
-                          <CheckCircleIcon fontSize="small" />
+                          <CheckCircleIcon sx={{ fontSize: '1rem' }} />
                         </IconButton>
                       )}
                       <IconButton
@@ -160,13 +200,14 @@ const Appointments = () => {
                         title="Delete"
                         onClick={() => removeAppointment(appointment._id)}
                         color="error"
+                        sx={{ p: 0.5 }}
                       >
-                        <DeleteIcon fontSize="small" />
+                        <DeleteIcon sx={{ fontSize: '1rem' }} />
                       </IconButton>
                     </Stack>
                   </ListItemSecondaryAction>
                 </ListItem>
-                {index < filtered.length - 1 && <Divider component="li" />}
+                {index < filtered.length - 1 && <Divider component="li" sx={{ mx: 2 }} />}
               </React.Fragment>
             ))}
           </List>
