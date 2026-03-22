@@ -40,6 +40,8 @@ const Layout = () => {
     if (location.pathname === '/') return 'Dashboard';
     if (location.pathname === '/customers') return 'Customers';
     if (location.pathname === '/appointments') return 'Appointments';
+    if (location.pathname === '/monthly-revenue') return 'Monthly Revenue';
+    if (location.pathname === '/pending-payments') return 'Pending Payments';
     if (location.pathname.startsWith('/customer/')) return 'Customer Details';
     return 'Salon MVP';
   };

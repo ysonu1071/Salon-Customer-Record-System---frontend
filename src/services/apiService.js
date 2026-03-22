@@ -41,6 +41,8 @@ export const addVisit = async (customerId, visitData) => {
   const { data } = await api.post(`/customers/${customerId}/services`, {
     service: visitData.service,
     price: visitData.amount, // price in backend is amount in frontend
+    totalBill: visitData.totalBill,
+    amountPaid: visitData.amountPaid,
     date: visitData.date
   });
   return data;
@@ -50,6 +52,8 @@ export const updateVisit = async (customerId, serviceId, visitData) => {
   const { data } = await api.put(`/customers/${customerId}/services/${serviceId}`, {
     service: visitData.service,
     price: visitData.amount,
+    totalBill: visitData.totalBill,
+    amountPaid: visitData.amountPaid,
     date: visitData.date
   });
   return data;

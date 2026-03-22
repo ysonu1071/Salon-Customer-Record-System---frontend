@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import CustomerList from './pages/CustomerList';
 import CustomerDetail from './pages/CustomerDetail';
 import Appointments from './pages/Appointments';
+import MonthlyRevenue from './pages/MonthlyRevenue';
+import PendingPayments from './pages/PendingPayments';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { CustomerProvider } from './context/CustomerContext';
@@ -30,6 +32,8 @@ const AppContent = () => {
           <Route path="customers" element={<CustomerList />} />
           <Route path="customer/:id" element={<CustomerDetail />} />
           <Route path="appointments" element={<Appointments />} />
+          <Route path="monthly-revenue" element={<MonthlyRevenue />} />
+          <Route path="pending-payments" element={<PendingPayments />} />
         </Route>
       </Routes>
       <Snackbar open={notification.open} autoHideDuration={4000} onClose={closeNotification} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>

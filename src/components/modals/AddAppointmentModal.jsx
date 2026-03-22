@@ -28,6 +28,10 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
     date: '',
     time: '',
     phone: '',
+    priceDiscussed: '',
+    advanceTaken: '',
+    appointmentType: 'salon',
+    location: '',
   });
 
   useEffect(() => {
@@ -47,12 +51,23 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
         date: '',
         time: '',
         phone: '',
+        priceDiscussed: '',
+        advanceTaken: '',
+        appointmentType: 'salon',
+        location: '',
       });
     }
   }, [initialCustomer, open]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation for outside appointments
+    if (formData.appointmentType === 'outside' && !formData.location.trim()) {
+      alert('Location is required for outside appointments');
+      return;
+    }
+    
     const success = await addAppointment(formData);
     if (success) {
       onClose();
@@ -64,8 +79,8 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 480 },
-    maxHeight: '95vh',
+    width: { xs: '90%', sm: 420 },
+    maxHeight: '90vh',
     overflowY: 'auto',
     bgcolor: 'background.paper',
     borderRadius: 2,
@@ -76,8 +91,8 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold', color: 'primary.main', fontSize: '1.1rem' }}>
             Book Appointment
           </Typography>
           <IconButton onClick={onClose} size="small">
@@ -90,6 +105,7 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
             {/* Customer field */}
             {initialCustomer ? (
               <TextField
+                size='small'
                 label="Customer"
                 value={formData.customerName}
                 disabled
@@ -97,6 +113,7 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
               />
             ) : (
               <Autocomplete
+                size='small'
                 options={customers}
                 getOptionLabel={(option) => option.name + (option.phone ? ` (${option.phone})` : '')}
                 onChange={(event, newValue) => {
@@ -109,6 +126,7 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
                 }}
                 renderInput={(params) => (
                   <TextField
+                    size='small'
                     {...params}
                     label="Select Customer"
                     required
@@ -125,9 +143,12 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
             )}
 
             {/* Service Type Dropdown */}
-            <FormControl fullWidth required>
-              <InputLabel>Service Type</InputLabel>
+            <FormControl fullWidth required size="small">
+              <InputLabel id="service-type-label">Service Type</InputLabel>
               <Select
+                labelId="service-type-label"
+                id="service-type-select"
+                size="small"
                 value={formData.serviceType}
                 label="Service Type"
                 onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
@@ -140,6 +161,7 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
 
             {/* Service description */}
             <TextField
+              size='small'
               label="Service Description"
               fullWidth
               value={formData.service}
@@ -150,6 +172,7 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
             {/* Date & Time */}
             <Stack direction="row" spacing={2}>
               <TextField
+                size='small'
                 label="Date"
                 type="date"
                 required
@@ -159,6 +182,7 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               />
               <TextField
+                size='small'
                 label="Time"
                 type="time"
                 required
@@ -170,22 +194,76 @@ const AddAppointmentModal = ({ open, onClose, initialCustomer = null }) => {
             </Stack>
 
             <TextField
+              size='small'
               label="Phone (Optional)"
               fullWidth
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             />
 
+            {/* Appointment Type */}
+            <FormControl fullWidth>
+              <InputLabel>Appointment Type</InputLabel>
+              <Select
+                size='small'
+                value={formData.appointmentType}
+                label="Appointment Type"
+                onChange={(e) => setFormData({ ...formData, appointmentType: e.target.value })}
+              >
+                <MenuItem value="salon">🏪 Salon</MenuItem>
+                <MenuItem value="outside">🏠 Outside</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Location field - only show if appointment type is outside */}
+            {formData.appointmentType === 'outside' && (
+              <TextField
+                size='small'
+                label="Location"
+                fullWidth
+                required
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="e.g. Customer's home address, Hotel name, etc."
+                helperText="Please provide the location details for outside appointment"
+              />
+            )}
+
+            {/* Price Fields */}
+            <Stack direction="row" spacing={2}>
+              <TextField
+                size='small'
+                label="Price Discussed"
+                type="number"
+                fullWidth
+                inputProps={{ step: '0.01', min: '0' }}
+                value={formData.priceDiscussed}
+                onChange={(e) => setFormData({ ...formData, priceDiscussed: e.target.value })}
+                placeholder="0.00"
+              />
+              <TextField
+                size='small'
+                label="Advance Taken"
+                type="number"
+                fullWidth
+                inputProps={{ step: '0.01', min: '0' }}
+                value={formData.advanceTaken}
+                onChange={(e) => setFormData({ ...formData, advanceTaken: e.target.value })}
+                placeholder="0.00"
+              />
+            </Stack>
+
             <Button
               type="submit"
               variant="contained"
-              size="large"
+              size="small"
               sx={{
-                mt: 1,
-                py: 1.5,
+                mt: 0.5,
+                py: 1,
                 fontWeight: 'bold',
                 textTransform: 'none',
-                borderRadius: 2
+                borderRadius: 2,
+                fontSize: '0.875rem'
               }}
             >
               Confirm Appointment

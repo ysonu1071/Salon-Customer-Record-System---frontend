@@ -5,7 +5,8 @@ import { CustomerContext } from '../../context/CustomerContext';
 const EditVisitModal = ({ open, onClose, customerId, visit }) => {
   const { updateVisit } = useContext(CustomerContext);
   const [service, setService] = useState('');
-  const [amount, setAmount] = useState('');
+  const [totalBill, setTotalBill] = useState('');
+  const [amountPaid, setAmountPaid] = useState('');
   const [date, setDate] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,8 @@ const EditVisitModal = ({ open, onClose, customerId, visit }) => {
   useEffect(() => {
     if (visit) {
       setService(visit.service || '');
-      setAmount(visit.price || '');
+      setTotalBill(visit.totalBill || '');
+      setAmountPaid(visit.amountPaid || '');
       // Format date for the input field (YYYY-MM-DD)
       if (visit.date) {
         setDate(new Date(visit.date).toISOString().split('T')[0]);
@@ -22,12 +24,14 @@ const EditVisitModal = ({ open, onClose, customerId, visit }) => {
   }, [visit]);
 
   const handleSave = async () => {
-    if (!service.trim() || !amount.toString().trim() || !date) return;
+    if (!service.trim() || !date) return;
 
     setLoading(true);
     const success = await updateVisit(customerId, visit._id, {
       service,
-      amount: parseFloat(amount),
+      amount: 0, // Keep for backward compatibility, but not used in UI
+      totalBill: parseFloat(totalBill) || 0,
+      amountPaid: parseFloat(amountPaid) || 0,
       date: new Date(date).toISOString(),
     });
     setLoading(false);
@@ -53,13 +57,24 @@ const EditVisitModal = ({ open, onClose, customerId, visit }) => {
             onChange={(e) => setService(e.target.value)}
           />
           <TextField
-            label="Amount Spent"
+            label="Total Bill"
             variant="outlined"
             fullWidth
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            value={totalBill}
+            onChange={(e) => setTotalBill(e.target.value)}
             InputProps={{ startAdornment: <Box sx={{ mr: 1, color: 'text.secondary' }}>₹</Box> }}
+            placeholder="0.00"
+          />
+          <TextField
+            label="Amount Paid"
+            variant="outlined"
+            fullWidth
+            type="number"
+            value={amountPaid}
+            onChange={(e) => setAmountPaid(e.target.value)}
+            InputProps={{ startAdornment: <Box sx={{ mr: 1, color: 'text.secondary' }}>₹</Box> }}
+            placeholder="0.00"
           />
           <TextField
             label="Date"
